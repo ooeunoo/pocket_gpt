@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:pocket_gpt/screen/chat_screen.dart';
 
 class ChatSummaryWidget extends StatelessWidget {
+  final int id;
   final String imageUrl;
   final String title;
-  final String message;
-  final DateTime lastChatTime;
+  final String? message;
+  final DateTime? lastChatTime;
 
   const ChatSummaryWidget({
     Key? key,
+    required this.id,
     required this.imageUrl,
     required this.title,
-    required this.message,
-    required this.lastChatTime,
+    this.message,
+    this.lastChatTime,
   }) : super(key: key);
 
   @override
@@ -23,6 +25,7 @@ class ChatSummaryWidget extends StatelessWidget {
           context,
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) => ChatScreen(
+              id: id,
               imageUrl: imageUrl,
               title: title,
             ),
@@ -48,14 +51,17 @@ class ChatSummaryWidget extends StatelessWidget {
           backgroundImage: NetworkImage(imageUrl),
         ),
         title: Text(title),
-        subtitle: Text(message),
+        subtitle: Text(
+          message ?? "",
+        ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
-              '${lastChatTime.hour}:${lastChatTime.minute}',
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
+            if (lastChatTime != null) // lastChatTime이 null이 아닐 때만 출력합니다.
+              Text(
+                '${lastChatTime?.hour}:${lastChatTime?.minute}',
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
           ],
         ),
       ),

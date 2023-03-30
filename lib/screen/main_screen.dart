@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_gpt/models/chat_model.dart';
+import 'package:pocket_gpt/screen/new_chat_screen.dart';
 import 'package:pocket_gpt/widget/chat_category_chip_widget.dart';
 import 'package:pocket_gpt/widget/chat_summary_widget.dart';
+import 'package:pocket_gpt/services/chat_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -10,49 +13,53 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  String selectedCategory = 'ALL'; // Initialize with 'ALL' selected by default
+  final ChatService _chatService = ChatService();
 
-  // Example data for chat list
-  List<Map<String, dynamic>> chatData = [
-    {
-      'imageUrl': 'https://via.placeholder.com/150',
-      'title': 'Chat 1',
-      'subtitle': 'Chat 1 Description',
-      'category': 'Category 1',
-      'lastChatTime': DateTime(2023, 3, 27, 12, 30),
-    },
-    {
-      'imageUrl': 'https://via.placeholder.com/150',
-      'title': 'Chat 2',
-      'subtitle': 'Chat 2 Description',
-      'category': 'Category 1',
-      'lastChatTime': DateTime(2023, 3, 26, 18, 45),
-    },
-    {
-      'imageUrl': 'https://via.placeholder.com/150',
-      'title': 'Chat 3',
-      'subtitle': 'Chat 3 Description',
-      'category': 'Category 2',
-      'lastChatTime': DateTime(2023, 3, 25, 9, 10),
-    },
-    {
-      'imageUrl': 'https://via.placeholder.com/150',
-      'title': 'Chat 4',
-      'subtitle': 'Chat 4 Description',
-      'category': 'Category 2',
-      'lastChatTime': DateTime(2023, 3, 24, 22, 35),
-    },
-    // Add more chats as needed
-  ];
+  String selectedCategory = 'ALL';
+  List<Chat> _chatData = [];
+  List<String> _categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchChats();
+    _fetchCategories();
+  }
+
+  Future<void> _fetchChats() async {
+    final chats = await _chatService.getChats();
+    setState(() {
+      _chatData = chats;
+    });
+  }
+
+  Future<void> _fetchCategories() async {
+    final List<String> categories = await _chatService.getCategories();
+    setState(() {
+      _categories = categories;
+    });
+  }
+
+  void _navigateToNewChatScreen(BuildContext context) async {
+    final bool? result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => NewChatScreen(categories: _categories)));
+
+    if (result != null && result) {
+      // Fetch the updated chat list if a new chat was created.
+      _fetchChats();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     // Filter the chat list based on the selected category
-    List<Map<String, dynamic>> filteredChatData = chatData.where((chat) {
+    List<Chat> filteredChatData = _chatData.where((chat) {
       if (selectedCategory == 'ALL') {
         return true;
       }
-      return chat['category'] == selectedCategory;
+      return chat.category == selectedCategory;
     }).toList();
 
     return Scaffold(
@@ -103,25 +110,16 @@ class _MainScreenState extends State<MainScreen> {
                           });
                         },
                       ),
-                      ChatCatergoryChipWidget(
-                        categoryName: 'Category 1',
-                        isSelected: selectedCategory == 'Category 1',
-                        onSelected: (bool selected) {
-                          setState(() {
-                            selectedCategory = selected ? 'Category 1' : 'ALL';
-                          });
-                        },
-                      ),
-                      ChatCatergoryChipWidget(
-                        categoryName: 'Category 2',
-                        isSelected: selectedCategory == 'Category 2',
-                        onSelected: (bool selected) {
-                          setState(() {
-                            selectedCategory = selected ? 'Category 2' : 'ALL';
-                          });
-                        },
-                      ),
-
+                      for (final category in _categories)
+                        ChatCatergoryChipWidget(
+                          categoryName: category,
+                          isSelected: selectedCategory == category,
+                          onSelected: (bool selected) {
+                            setState(() {
+                              selectedCategory = selected ? category : 'ALL';
+                            });
+                          },
+                        ),
                       // Add more CategoryChip widgets as needed
                     ],
                   ),
@@ -134,11 +132,15 @@ class _MainScreenState extends State<MainScreen> {
               itemCount: filteredChatData.length,
               itemBuilder: (BuildContext context, int index) {
                 return ChatSummaryWidget(
-                  imageUrl: filteredChatData[index]['imageUrl'],
-                  title: filteredChatData[index]['title'],
-                  message: filteredChatData[index]
-                      ['subtitle'], // Changed from 'message' to 'subtitle'
-                  lastChatTime: filteredChatData[index]['lastChatTime'],
+                  id: filteredChatData[index].id as int,
+                  imageUrl: filteredChatData[index].imageUrl,
+                  title: filteredChatData[index].title,
+                  message: filteredChatData[index].lastMessage?.data,
+                  lastChatTime:
+                      filteredChatData[index].getLastChatTimeString() != null
+                          ? DateTime.parse(
+                              filteredChatData[index].getLastChatTimeString()!)
+                          : null,
                 );
               },
             ),
@@ -152,7 +154,7 @@ class _MainScreenState extends State<MainScreen> {
             right: 16.0,
             child: FloatingActionButton(
               onPressed: () {
-                // Add functionality for the FloatingActionButton
+                _navigateToNewChatScreen(context);
               },
               backgroundColor: Colors.blue,
               child: const Icon(Icons.add),
