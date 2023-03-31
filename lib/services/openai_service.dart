@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:pocket_gpt/config/openai_model.dart';
 
 class OpenAIService {
   static const String apiKey =
@@ -15,7 +16,7 @@ class OpenAIService {
           'Authorization': 'Bearer $apiKey',
         },
         body: utf8.encode(json.encode({
-          "model": "gpt-3.5-turbo",
+          "model": getOepnAIModel(OpenAIModel.gpt3_5_turbo),
           "messages": [
             {"role": "user", "content": prompt}
           ]

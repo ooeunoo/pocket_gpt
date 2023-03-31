@@ -28,6 +28,7 @@ class _ChatMessageWidget extends State<ChatMessageWidget> {
   }
 }
 
+// 유저 메시지
 class UserMessage extends StatelessWidget {
   final Message message;
 
@@ -90,6 +91,7 @@ class UserMessage extends StatelessWidget {
   }
 }
 
+// GPT 메시지
 class GPTMessage extends StatelessWidget {
   final Message message;
 

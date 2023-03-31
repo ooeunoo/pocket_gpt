@@ -23,6 +23,11 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    refresh();
+  }
+
+  // 채팅 목록 리프레쉬
+  Future<void> refresh() async {
     _fetchChats();
     _fetchCategories();
   }
@@ -44,7 +49,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   // 신규 채팅 추가 스크린으로 이동
-  void _navigateToNewChatScreen(BuildContext context) async {
+  Future<void> _navigateToNewChatScreen(BuildContext context) async {
     final bool? result = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -52,12 +57,12 @@ class _MainScreenState extends State<MainScreen> {
 
     if (result != null && result) {
       // Fetch the updated chat list if a new chat was created.
-      _fetchChats();
+      refresh();
     }
   }
 
   // 채팅 스크린으로 이동
-  void _navigateToChatScreen(BuildContext context, Chat chat) async {
+  Future<void> _navigateToChatScreen(BuildContext context, Chat chat) async {
     await Navigator.push(
       context,
       PageRouteBuilder(
@@ -79,9 +84,17 @@ class _MainScreenState extends State<MainScreen> {
         },
       ),
     ).then((value) {
-      _fetchChats();
-      _fetchCategories();
+      refresh();
     });
+  }
+
+  // 채팅 삭제
+  Future<void> _deleteChat(Chat chat) async {
+    int deleteChatId = await _chatService.deleteChat(chat.id as int);
+
+    if (deleteChatId > 0) {
+      refresh();
+    }
   }
 
   @override
@@ -160,12 +173,17 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
+            child: ListView.separated(
+              separatorBuilder: (context, index) => Divider(
+                color: Colors.grey[200],
+                thickness: 0.8,
+              ),
               itemCount: filteredChatData.length,
               itemBuilder: (BuildContext context, int index) {
                 return ChatSummaryWidget(
                     chat: filteredChatData[index],
-                    goToChatScreen: _navigateToChatScreen);
+                    goToChatScreen: _navigateToChatScreen,
+                    deleteChat: _deleteChat);
               },
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:pocket_gpt/models/chat_model.dart';
 import 'package:pocket_gpt/models/message_model.dart';
 import 'package:pocket_gpt/services/chat_service.dart';
 import 'package:pocket_gpt/services/openai_service.dart';
+import 'package:pocket_gpt/widget/chat_loading_widget.dart';
 import 'package:pocket_gpt/widget/chat_message_widget.dart';
 import 'package:uuid/uuid.dart';
 
@@ -39,6 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
+  // 초기 채팅 메시지 로드
   Future<void> _loadChatMessages() async {
     List<Message> messages =
         await _chatService.getChatMessages(widget.chat.id as int);
@@ -48,6 +50,7 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
+  // 메시지 송신
   Future<void> _sendMessage() async {
     if (_messageController.text.isNotEmpty) {
       Message newMessage = Message(
@@ -70,11 +73,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void _scrollToBottom() {
-    _scrollController.animateTo(_scrollController.position.minScrollExtent,
-        duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
-  }
-
+  // 메시지 수신
   Future<void> _receiveMessage(String prompt) async {
     waitingForAnswer = true;
 
@@ -87,17 +86,23 @@ class _ChatScreenState extends State<ChatScreen> {
         isSentByUser: 0);
 
     int messageId = await _chatService.addChatMessage(newMessage);
+    waitingForAnswer = false;
 
     if (messageId > 0) {
       _messageController.clear();
+
       setState(() {
         _messages.insert(0, newMessage);
       });
 
       _scrollToBottom();
     }
+  }
 
-    waitingForAnswer = true;
+  // 화면 하단으로 스크롤
+  void _scrollToBottom() {
+    _scrollController.animateTo(_scrollController.position.minScrollExtent,
+        duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
   }
 
   @override
@@ -155,9 +160,11 @@ class _ChatScreenState extends State<ChatScreen> {
               controller: _scrollController,
             ),
           ),
+          if (waitingForAnswer) const ChatLoadingWidget(),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10.0,
+            ),
             height: 120.0,
             child: Row(
               children: <Widget>[
