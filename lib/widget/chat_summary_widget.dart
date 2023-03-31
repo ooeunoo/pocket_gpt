@@ -1,65 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_gpt/screen/chat_screen.dart';
+import 'package:pocket_gpt/models/chat_model.dart';
 
 class ChatSummaryWidget extends StatelessWidget {
-  final int id;
-  final String imageUrl;
-  final String title;
-  final String? message;
-  final DateTime? lastChatTime;
+  final Chat chat;
+  final Function(BuildContext context, Chat chat) goToChatScreen;
 
-  const ChatSummaryWidget({
-    Key? key,
-    required this.id,
-    required this.imageUrl,
-    required this.title,
-    this.message,
-    this.lastChatTime,
-  }) : super(key: key);
+  const ChatSummaryWidget(
+      {Key? key, required this.chat, required this.goToChatScreen})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.push(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => ChatScreen(
-              id: id,
-              imageUrl: imageUrl,
-              title: title,
-            ),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              var begin = const Offset(1.0, 0.0);
-              var end = Offset.zero;
-              var curve = Curves.ease;
-
-              var tween =
-                  Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-              return SlideTransition(
-                position: animation.drive(tween),
-                child: child,
-              );
-            },
-          ),
-        );
+        goToChatScreen(context, chat); // 함수를 호출합니다.
       },
       child: ListTile(
         leading: CircleAvatar(
-          backgroundImage: NetworkImage(imageUrl),
+          backgroundImage: NetworkImage(chat.imageUrl),
         ),
-        title: Text(title),
+        title: Text(chat.title),
         subtitle: Text(
-          message ?? "",
+          chat.lastMessage?.data ?? "",
+          overflow: TextOverflow.ellipsis,
         ),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            if (lastChatTime != null) // lastChatTime이 null이 아닐 때만 출력합니다.
+            if (chat.lastMessage?.chatTime !=
+                null) // lastChatTime이 null이 아닐 때만 출력합니다.
               Text(
-                '${lastChatTime?.hour}:${lastChatTime?.minute}',
+                '${chat.lastMessage?.chatTime?.hour}:${chat.lastMessage?.chatTime?.minute}',
                 style: const TextStyle(fontSize: 12, color: Colors.grey),
               ),
           ],

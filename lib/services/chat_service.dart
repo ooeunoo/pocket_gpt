@@ -1,5 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:async';
+
 import 'package:pocket_gpt/helpers/database_helper.dart';
 import 'package:pocket_gpt/models/chat_model.dart';
 import 'package:pocket_gpt/models/message_model.dart';
@@ -15,7 +17,7 @@ class ChatService {
     return await _db.insert(CHAT_TB, chat.toJson());
   }
 
-  // Get chats
+  // Get chats with last message
   Future<List<Chat>> getChats() async {
     final db = await _db.database;
     final chats = await db.rawQuery('''
@@ -67,15 +69,12 @@ class ChatService {
   }
 
   // Get chat messages
-  Future<List<Message>> getChatMessages(
-      int chatId, int offset, int limit) async {
+  Future<List<Message>> getChatMessages(int chatId) async {
     final messageMaps = await _db.query(MESSAGE_TB,
         whereConditions: ['chatId = ?'],
         whereArgsLists: [
           [chatId],
         ],
-        limit: limit,
-        offset: offset,
         orderby: 'id desc');
     return messageMaps
         .map((messageMap) => Message.fromJson(messageMap))

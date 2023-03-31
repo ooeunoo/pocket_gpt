@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_gpt/models/chat_model.dart';
+import 'package:pocket_gpt/screen/chat_screen.dart';
 import 'package:pocket_gpt/screen/new_chat_screen.dart';
 import 'package:pocket_gpt/widget/chat_category_chip_widget.dart';
 import 'package:pocket_gpt/widget/chat_summary_widget.dart';
@@ -26,6 +27,7 @@ class _MainScreenState extends State<MainScreen> {
     _fetchCategories();
   }
 
+  // 채팅 리스트 가져오기
   Future<void> _fetchChats() async {
     final chats = await _chatService.getChats();
     setState(() {
@@ -33,6 +35,7 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  // 채팅 카테고리 가져오기
   Future<void> _fetchCategories() async {
     final List<String> categories = await _chatService.getCategories();
     setState(() {
@@ -40,6 +43,7 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  // 신규 채팅 추가 스크린으로 이동
   void _navigateToNewChatScreen(BuildContext context) async {
     final bool? result = await Navigator.push(
         context,
@@ -50,6 +54,34 @@ class _MainScreenState extends State<MainScreen> {
       // Fetch the updated chat list if a new chat was created.
       _fetchChats();
     }
+  }
+
+  // 채팅 스크린으로 이동
+  void _navigateToChatScreen(BuildContext context, Chat chat) async {
+    await Navigator.push(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => ChatScreen(
+          chat: chat,
+        ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          var begin = const Offset(1.0, 0.0);
+          var end = Offset.zero;
+          var curve = Curves.ease;
+
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+      ),
+    ).then((value) {
+      _fetchChats();
+      _fetchCategories();
+    });
   }
 
   @override
@@ -132,16 +164,8 @@ class _MainScreenState extends State<MainScreen> {
               itemCount: filteredChatData.length,
               itemBuilder: (BuildContext context, int index) {
                 return ChatSummaryWidget(
-                  id: filteredChatData[index].id as int,
-                  imageUrl: filteredChatData[index].imageUrl,
-                  title: filteredChatData[index].title,
-                  message: filteredChatData[index].lastMessage?.data,
-                  lastChatTime:
-                      filteredChatData[index].getLastChatTimeString() != null
-                          ? DateTime.parse(
-                              filteredChatData[index].getLastChatTimeString()!)
-                          : null,
-                );
+                    chat: filteredChatData[index],
+                    goToChatScreen: _navigateToChatScreen);
               },
             ),
           ),
