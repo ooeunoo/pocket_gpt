@@ -77,7 +77,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _receiveMessage(String prompt) async {
     waitingForAnswer = true;
 
-    String answer = await _openAIService.askToChatGPT(prompt);
+    String answer = await _openAIService.askToChatGPT(_messages, prompt);
 
     Message newMessage = Message(
         chatId: widget.chat.id as int,

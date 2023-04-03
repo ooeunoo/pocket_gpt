@@ -16,6 +16,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _pages = [
     const ChatListScreen(),
     const Text('Scrap'),
+    const Text('Discover'),
     const SettingScreen()
   ];
 
@@ -44,10 +45,17 @@ class _MainScreenState extends State<MainScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
+              CupertinoIcons.arrowtriangle_right,
+              size: 28,
+            ),
+            label: 'Dicover',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
               CupertinoIcons.archivebox,
               size: 28,
             ),
-            label: 'Search',
+            label: 'Scrap',
           ),
           BottomNavigationBarItem(
             icon: Icon(
