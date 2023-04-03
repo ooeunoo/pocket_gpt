@@ -44,6 +44,7 @@ dependencies:
   http: ^0.13.5
   flutter_secure_storage: ^8.0.0
   flutter_spinkit: ^5.1.0
+  cached_network_image: ^3.2.3
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +71,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/logo.png
+    - assets/images/default_avatar.png
     - assets/images/avatar1.png
     - assets/images/avatar2.png
 

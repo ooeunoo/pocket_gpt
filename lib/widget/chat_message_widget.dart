@@ -78,13 +78,6 @@ class UserMessage extends StatelessWidget {
               ],
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(left: 8.0),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundImage: AssetImage('assets/images/avatar2.png'),
-            ),
-          )
         ],
       ),
     );

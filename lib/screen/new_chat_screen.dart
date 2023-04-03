@@ -44,6 +44,21 @@ class _NewChatScreenState extends State<NewChatScreen> {
     super.dispose();
   }
 
+  Future<void> createNewChat() async {
+    // Create a new chat with the given title and category.
+    Chat newChat = Chat(
+      imageUrl: _imageUrlController.text,
+      title: _titleController.text,
+      category: _categoryController.text,
+    );
+    int id = await _chatService.addChat(newChat);
+
+    // Check if the chat was created successfully and go back to the main screen.
+    if (id > 0) {
+      Navigator.pop(context, true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,20 +79,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
           actions: [
             CupertinoButton(
               onPressed: () async {
-                setState(() {});
-
-                // Create a new chat with the given title and category.
-                Chat newChat = Chat(
-                  imageUrl: _imageUrlController.text,
-                  title: _titleController.text,
-                  category: _categoryController.text,
-                );
-                int id = await _chatService.addChat(newChat);
-
-                // Check if the chat was created successfully and go back to the main screen.
-                if (id > 0) {
-                  Navigator.pop(context, true);
-                }
+                createNewChat();
               },
               child: const Text(
                 'Create',

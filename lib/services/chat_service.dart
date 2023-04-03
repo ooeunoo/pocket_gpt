@@ -54,7 +54,8 @@ class ChatService {
   // Get unique cateogry
   Future<List<String>> getCategories() async {
     final db = await _db.database;
-    final result = await db.rawQuery('SELECT DISTINCT category FROM chats');
+    final result = await db
+        .rawQuery('SELECT DISTINCT category FROM chats WHERE category <> ""');
     return result.map((e) => e['category'] as String).toList();
   }
 

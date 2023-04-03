@@ -89,13 +89,13 @@ class _ChatScreenState extends State<ChatScreen> {
     waitingForAnswer = false;
 
     if (messageId > 0) {
-      _messageController.clear();
-
-      setState(() {
-        _messages.insert(0, newMessage);
-      });
-
-      _scrollToBottom();
+      if (mounted) {
+        _messageController.clear();
+        setState(() {
+          _messages.insert(0, newMessage);
+        });
+        _scrollToBottom();
+      }
     }
   }
 
@@ -107,98 +107,108 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
         backgroundColor: Colors.white,
-        leading: Row(
-          children: [
-            CupertinoButton(
-                padding: EdgeInsets.zero,
-                child: const Icon(CupertinoIcons.back, color: Colors.black),
-                onPressed: () {
-                  Navigator.pop(context);
-                }),
-            const SizedBox(width: 8.0),
-          ],
-        ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              backgroundImage: NetworkImage(widget.chat.imageUrl),
-            ),
-            const SizedBox(
-                width: 8), // Adjust spacing between the image and the title
-            Text(
-              widget.chat.title,
-              style: const TextStyle(color: Colors.black),
-            ),
-          ],
-        ),
-        centerTitle: true,
-        actions: [
-          CupertinoButton(
-            onPressed: () {},
-            padding: EdgeInsets.zero,
-            child: const Icon(CupertinoIcons.ellipsis, color: Colors.black),
-          )
-        ],
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              reverse: true,
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                return ChatMessageWidget(
-                    key: ValueKey(_uuid.v4()), message: message);
-              },
-              controller: _scrollController,
-            ),
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          leading: Row(
+            children: [
+              CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  child: const Icon(CupertinoIcons.back, color: Colors.black),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  }),
+              const SizedBox(width: 8.0),
+            ],
           ),
-          if (waitingForAnswer) const ChatLoadingWidget(),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10.0,
-            ),
-            height: 120.0,
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: CupertinoTextField(
-                    controller: _messageController,
-                    placeholder: 'Send a message...',
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30.0),
-                      border: Border.all(
-                        color: CupertinoColors.lightBackgroundGray,
-                        width: 1.0,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundImage: NetworkImage(widget.chat.imageUrl),
+              ),
+              const SizedBox(
+                  width: 8), // Adjust spacing between the image and the title
+              Text(
+                widget.chat.title,
+                style: const TextStyle(color: Colors.black),
+              ),
+            ],
+          ),
+          centerTitle: true,
+          actions: [
+            CupertinoButton(
+              onPressed: () {},
+              padding: EdgeInsets.zero,
+              child: const Icon(CupertinoIcons.ellipsis, color: Colors.black),
+            )
+          ],
+          elevation: 0,
+        ),
+        body: GestureDetector(
+          onHorizontalDragUpdate: (details) {
+            if (details.delta.dx > 0 &&
+                details.globalPosition.dx > screenWidth / 2) {
+              Navigator.of(context).pop();
+            }
+          },
+          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  reverse: true,
+                  itemCount: _messages.length,
+                  itemBuilder: (context, index) {
+                    final message = _messages[index];
+                    return ChatMessageWidget(
+                        key: ValueKey(_uuid.v4()), message: message);
+                  },
+                  controller: _scrollController,
+                ),
+              ),
+              if (waitingForAnswer) const ChatLoadingWidget(),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20.0,
+                ),
+                height: 120.0,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: CupertinoTextField(
+                        controller: _messageController,
+                        placeholder: 'Send a message...',
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30.0),
+                          border: Border.all(
+                            color: CupertinoColors.lightBackgroundGray,
+                            width: 1.0,
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12.0, vertical: 12.0),
+                        textInputAction: TextInputAction.send,
+                        onSubmitted: (value) => _sendMessage(),
                       ),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0, vertical: 12.0),
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: (value) => _sendMessage(),
-                  ),
+                    CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: _sendMessage,
+                      child: const Icon(
+                        CupertinoIcons.paperplane_fill,
+                        size: 25.0,
+                        color: CupertinoColors.activeBlue,
+                      ),
+                    ),
+                  ],
                 ),
-                CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: _sendMessage,
-                  child: const Icon(
-                    CupertinoIcons.paperplane_fill,
-                    size: 25.0,
-                    color: CupertinoColors.activeBlue,
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
+              )
+            ],
+          ),
+        ));
   }
 }

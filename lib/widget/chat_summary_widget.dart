@@ -47,6 +47,8 @@ class _ChatSummaryWidgetState extends State<ChatSummaryWidget>
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+
     return Dismissible(
       key: UniqueKey(),
       direction: DismissDirection.endToStart,
@@ -103,17 +105,34 @@ class _ChatSummaryWidgetState extends State<ChatSummaryWidget>
           leading: CircleAvatar(
             backgroundImage: NetworkImage(widget.chat.imageUrl),
           ),
-          title: Text(widget.chat.title),
-          subtitle: Text(
-            widget.chat.lastMessage?.data ?? "",
-            overflow: TextOverflow.ellipsis,
+          title: Text(
+            widget.chat.title,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              overflow: TextOverflow.ellipsis,
+              widget.chat.lastMessage?.data ?? "",
+            ),
           ),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               if (widget.chat.lastMessage?.chatTime != null)
+                // Check the difference between the chatTime and the current time
                 Text(
-                  '${widget.chat.lastMessage?.chatTime?.hour}:${widget.chat.lastMessage?.chatTime?.minute}',
+                  (now.day == widget.chat.lastMessage!.chatTime!.day)
+                      ? '${widget.chat.lastMessage?.chatTime?.hour}:${widget.chat.lastMessage?.chatTime?.minute}'
+                      : (now
+                                  .difference(
+                                      widget.chat.lastMessage!.chatTime!)
+                                  .inDays ==
+                              1)
+                          ? 'Yesterday'
+                          : '${now.difference(widget.chat.lastMessage!.chatTime!).inDays} days ago',
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
             ],
