@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "198724125354",
+    "project_id": "pocketgpt-7a3f1",
+    "storage_bucket": "pocketgpt-7a3f1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:198724125354:android:c0d25fbf2c61442d4106d3",
+        "android_client_info": {
+          "package_name": "com.example.pocket_gpt"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "198724125354-9tbmolp2mhsjug9bf24235ve244bk4hu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASrgXGj7hSYUU7Mg_Dyn6U-KghQkTx9FE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "198724125354-9tbmolp2mhsjug9bf24235ve244bk4hu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

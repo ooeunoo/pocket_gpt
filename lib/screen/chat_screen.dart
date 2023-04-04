@@ -57,12 +57,14 @@ class _ChatScreenState extends State<ChatScreen> {
           chatId: widget.chat.id as int,
           data: _messageController.text,
           chatTime: DateTime.now(),
-          isSentByUser: 1);
+          isSentByUser: 1,
+          like: 0);
 
       int messageId = await _chatService.addChatMessage(newMessage);
 
       if (messageId > 0) {
         _messageController.clear();
+        newMessage.id = messageId;
         setState(() {
           _messages.insert(0, newMessage);
         });
@@ -83,7 +85,8 @@ class _ChatScreenState extends State<ChatScreen> {
         chatId: widget.chat.id as int,
         data: answer,
         chatTime: DateTime.now(),
-        isSentByUser: 0);
+        isSentByUser: 0,
+        like: 0);
 
     int messageId = await _chatService.addChatMessage(newMessage);
     waitingForAnswer = false;
@@ -91,10 +94,24 @@ class _ChatScreenState extends State<ChatScreen> {
     if (messageId > 0) {
       if (mounted) {
         _messageController.clear();
+        newMessage.id = messageId;
         setState(() {
           _messages.insert(0, newMessage);
         });
         _scrollToBottom();
+      }
+    }
+  }
+
+  Future<void> _toogleChatMessageLike(int index, Message message) async {
+    message.like = message.like == 0 ? 1 : 0;
+    int messageId = await _chatService.updateChatMessage(message);
+
+    if (messageId > 0) {
+      if (mounted) {
+        setState(() {
+          _messages[index] = message;
+        });
       }
     }
   }
@@ -165,7 +182,11 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemBuilder: (context, index) {
                     final message = _messages[index];
                     return ChatMessageWidget(
-                        key: ValueKey(_uuid.v4()), message: message);
+                        key: ValueKey(_uuid.v4()),
+                        message: message,
+                        toogleLike: () async {
+                          await _toogleChatMessageLike(index, message);
+                        });
                   },
                   controller: _scrollController,
                 ),

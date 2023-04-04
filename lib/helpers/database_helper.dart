@@ -5,7 +5,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static const _databaseName = 'PocketGPT.db';
-  static const _databaseVersion = 3;
+  static const _databaseVersion = 1;
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -22,6 +22,8 @@ class DatabaseHelper {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
     print(path);
+    // await deleteDatabase(path);
+
     return await openDatabase(path,
         version: _databaseVersion, onCreate: _onCreate, onUpgrade: _onUpgrade);
   }
@@ -44,18 +46,13 @@ class DatabaseHelper {
         data TEXT NOT NULL,
         chatTime TEXT NOT NULL,
         isSentByUser INTEGER NOT NULL,
+        like INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY (chatId) REFERENCES chats (id) ON DELETE CASCADE
+      )
     ''');
   }
 
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // if (oldVersion < 2) {
-    //   await db.execute('''
-    //   ALTER TABLE messages ADD COLUMN isSentByUser INTEGER NOT NULL DEFAULT 0
-    // ''');
-    // }
-    // Add more upgrade steps if needed for future versions
-  }
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {}
 
   Future<int> insert(String table, Map<String, dynamic> row) async {
     Database db = await instance.database;

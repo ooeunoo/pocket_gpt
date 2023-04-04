@@ -5,6 +5,7 @@ class Chat {
   String imageUrl;
   String title;
   String category;
+  // int favorite;
   DateTime? createTime;
   Message? lastMessage;
 

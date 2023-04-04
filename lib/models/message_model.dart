@@ -4,14 +4,15 @@ class Message {
   String data;
   DateTime? chatTime;
   int isSentByUser;
+  int? like;
 
-  Message({
-    this.id,
-    required this.chatId,
-    required this.data,
-    required this.chatTime,
-    required this.isSentByUser,
-  });
+  Message(
+      {this.id,
+      required this.chatId,
+      required this.data,
+      required this.chatTime,
+      required this.isSentByUser,
+      required this.like});
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -19,6 +20,7 @@ class Message {
         'data': data,
         'chatTime': chatTime?.toIso8601String(),
         'isSentByUser': isSentByUser,
+        'like': like,
       };
 
   factory Message.fromJson(Map<String, dynamic> json) => Message(
@@ -27,5 +29,6 @@ class Message {
         data: json['data'],
         chatTime: DateTime.parse(json['chatTime']),
         isSentByUser: json['isSentByUser'],
+        like: json['like'],
       );
 }

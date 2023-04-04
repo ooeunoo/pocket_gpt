@@ -43,7 +43,8 @@ class ChatService {
             chatTime: chatMap['chatTime'] != null
                 ? DateTime.parse(chatMap['chatTime'] as String)
                 : null,
-            isSentByUser: chatMap['isSentByUser'] as int);
+            isSentByUser: chatMap['isSentByUser'] as int,
+            like: chatMap['like'] != null ? chatMap['like'] as int : null);
       }
       result.add(chat);
     }
@@ -85,5 +86,9 @@ class ChatService {
   // Add chat message
   Future<int> addChatMessage(Message message) async {
     return await _db.insert(MESSAGE_TB, message.toJson());
+  }
+
+  Future<int> updateChatMessage(Message message) async {
+    return await _db.update(MESSAGE_TB, message.toJson());
   }
 }
