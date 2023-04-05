@@ -14,6 +14,8 @@ class NewChatScreen extends StatefulWidget {
 
 class _NewChatScreenState extends State<NewChatScreen> {
   final ADD_NEW_CATEGORY = 'Add new category';
+  String? _titleErrorMessage;
+
   List<String> _categories = [];
 
   late TextEditingController _titleController;
@@ -45,6 +47,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   Future<void> createNewChat() async {
+    if (_titleController.text.isEmpty) {
+      setState(() {
+        _titleErrorMessage = "Title cannot be empty";
+      });
+      return;
+    }
     // Create a new chat with the given title and category.
     Chat newChat = Chat(
       imageUrl: _imageUrlController.text,
@@ -57,122 +65,6 @@ class _NewChatScreenState extends State<NewChatScreen> {
     if (id > 0) {
       Navigator.pop(context, true);
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          leading: IconButton(
-            icon: const Icon(
-              CupertinoIcons.back,
-              color: Colors.black,
-            ),
-            onPressed: () => Navigator.pop(context),
-          ),
-          title: const Text(
-            'New Chat',
-            style: TextStyle(color: Colors.black),
-          ),
-          actions: [
-            CupertinoButton(
-              onPressed: () async {
-                createNewChat();
-              },
-              child: const Text(
-                'Create',
-                style: TextStyle(color: Colors.blue),
-              ),
-            )
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 24.0),
-              const Text(
-                'Title',
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 12.0, horizontal: 16.0),
-                ),
-              ),
-              const SizedBox(height: 24.0),
-              const Text(
-                'Image URL',
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextFormField(
-                controller: _imageUrlController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 12.0, horizontal: 16.0),
-                ),
-              ),
-              const SizedBox(height: 24.0),
-              const Text(
-                'Category',
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              DropdownButtonFormField<String>(
-                value: _categoryController.text.isNotEmpty
-                    ? _categoryController.text
-                    : null,
-                decoration: InputDecoration(
-                  labelText: 'Category',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onChanged: (String? value) {
-                  setState(() {
-                    if (value == ADD_NEW_CATEGORY) {
-                      _showAddCategoryDialog();
-                    } else {
-                      _categoryController.text = value ?? '';
-                    }
-                  });
-                },
-                items: [
-                  DropdownMenuItem(
-                    value: ADD_NEW_CATEGORY,
-                    child: Text(
-                      ADD_NEW_CATEGORY,
-                      style: TextStyle(color: Theme.of(context).primaryColor),
-                    ),
-                  ),
-                  ..._categories.map((category) => DropdownMenuItem(
-                        value: category,
-                        child: Text(category),
-                      )),
-                ],
-              ),
-            ],
-          ),
-        ));
   }
 
   void _showAddCategoryDialog() {
@@ -207,5 +99,186 @@ class _NewChatScreenState extends State<NewChatScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          leading: IconButton(
+            icon: const Icon(
+              CupertinoIcons.back,
+              color: Colors.black,
+            ),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: const Text(
+            'New Chat',
+            style: TextStyle(color: Colors.black),
+          ),
+          actions: [
+            CupertinoButton(
+              onPressed: () async {
+                createNewChat();
+              },
+              child: const Text(
+                'Create',
+                style: TextStyle(color: Colors.blue),
+              ),
+            )
+          ],
+          elevation: 0,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              /**
+               * 
+               *  Title
+               * 
+               */
+              Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 20, top: 15, bottom: 5, right: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: const TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Title',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 15,
+                                    color: Color(0xff67727d)),
+                              ),
+                              TextSpan(
+                                text: ' *',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        TextField(
+                          controller: _titleController,
+                          cursorColor: Colors.black,
+                          style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black),
+                          decoration: const InputDecoration(
+                              hintText: "Enter chat title",
+                              border: InputBorder.none),
+                        ),
+                      ],
+                    ),
+                  )),
+              const SizedBox(height: 24.0),
+              /**
+               * 
+               *  Image 
+               * 
+               */
+              // Container(
+              //     width: double.infinity,
+              //     decoration: BoxDecoration(
+              //       color: Colors.white,
+              //       borderRadius: BorderRadius.circular(25),
+              //     ),
+              //     child: Padding(
+              //       padding: const EdgeInsets.only(
+              //           left: 20, top: 15, bottom: 5, right: 20),
+              //       child: Column(
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         children: [
+              //           RichText(
+              //             text: const TextSpan(
+              //               children: [
+              //                 TextSpan(
+              //                   text: 'Title',
+              //                   style: TextStyle(
+              //                       fontWeight: FontWeight.w500,
+              //                       fontSize: 13,
+              //                       color: Color(0xff67727d)),
+              //                 ),
+              //                 TextSpan(
+              //                   text: ' *',
+              //                   style: TextStyle(
+              //                     fontWeight: FontWeight.w500,
+              //                     fontSize: 13,
+              //                     color: Colors.red,
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //           TextField(
+              //             controller: _titleController,
+              //             cursorColor: Colors.black,
+              //             style: const TextStyle(
+              //                 fontSize: 17,
+              //                 fontWeight: FontWeight.w500,
+              //                 color: Colors.black),
+              //             decoration: const InputDecoration(
+              //                 hintText: "Enter chat title",
+              //                 border: InputBorder.none),
+              //           ),
+              //         ],
+              //       ),
+              //     )),
+
+              // const SizedBox(height: 24.0),
+
+              // DropdownButtonFormField<String>(
+              //   value: _categoryController.text.isNotEmpty
+              //       ? _categoryController.text
+              //       : null,
+              //   decoration: InputDecoration(
+              //     labelText: 'Category',
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(8),
+              //     ),
+              //   ),
+              //   onChanged: (String? value) {
+              //     setState(() {
+              //       if (value == ADD_NEW_CATEGORY) {
+              //         _showAddCategoryDialog();
+              //       } else {
+              //         _categoryController.text = value ?? '';
+              //       }
+              //     });
+              //   },
+              //   items: [
+              //     DropdownMenuItem(
+              //       value: ADD_NEW_CATEGORY,
+              //       child: Text(
+              //         ADD_NEW_CATEGORY,
+              //         style: TextStyle(color: Theme.of(context).primaryColor),
+              //       ),
+              //     ),
+              //     ..._categories.map((category) => DropdownMenuItem(
+              //           value: category,
+              //           child: Text(category),
+              //         )),
+              //   ],
+              // ),
+            ],
+          ),
+        ));
   }
 }

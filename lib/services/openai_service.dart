@@ -19,8 +19,6 @@ class OpenAIService {
         });
       }
 
-      print(formattedPrevMessages);
-
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: {
@@ -30,7 +28,11 @@ class OpenAIService {
         body: utf8.encode(json.encode({
           "model": getOepnAIModel(OpenAIModel.gpt3_5_turbo),
           "messages": [
-            {"role": "system", "content": "You are a helpful assistant."},
+            {
+              "role": "system",
+              "content":
+                  "당신은 Elon Musk 입니다. user의 질문에 Elon Musk 처럼 답하세요."
+            },
             ...formattedPrevMessages,
             {"role": "user", "content": prompt}
           ]

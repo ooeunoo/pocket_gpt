@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_gpt/screen/chat_list_screen.dart';
+import 'package:pocket_gpt/screen/role_chat_screen.dart';
 import 'package:pocket_gpt/screen/setting_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -15,8 +16,8 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _pages = [
     const ChatListScreen(),
+    const RoleChatScreen(),
     const Text('Scrap'),
-    const Text('Discover'),
     const SettingScreen()
   ];
 
@@ -45,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              CupertinoIcons.arrowtriangle_right,
+              CupertinoIcons.tray_full,
               size: 28,
             ),
             label: 'Dicover',

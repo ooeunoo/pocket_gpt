@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_gpt/models/chat_model.dart';
 
+import 'chat_avatar_widget.dart';
+
 class ChatSummaryWidget extends StatefulWidget {
   final Chat chat;
   final Function(BuildContext context, Chat chat) goToChatScreen;
@@ -102,8 +104,12 @@ class _ChatSummaryWidgetState extends State<ChatSummaryWidget>
           widget.goToChatScreen(context, widget.chat);
         },
         child: ListTile(
-          leading: CircleAvatar(
-            backgroundImage: NetworkImage(widget.chat.imageUrl),
+          leading: SizedBox(
+            width: 40,
+            height: 40,
+            child: ChatAvatarWidget(
+                imageUrl: widget.chat.imageUrl,
+                fallbackText: widget.chat.title),
           ),
           title: Text(
             widget.chat.title,
