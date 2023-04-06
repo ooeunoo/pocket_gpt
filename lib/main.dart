@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_gpt/config/theme.dart';
 import 'package:pocket_gpt/screen/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -18,9 +19,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Splash Screen Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: getThemeData(Brightness.light),
+      darkTheme: getThemeData(Brightness.dark),
+      themeMode: ThemeMode.system,
       home: const SplashScreen(),
     );
   }

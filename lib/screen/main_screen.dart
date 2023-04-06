@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_gpt/screen/chat_list_screen.dart';
-import 'package:pocket_gpt/screen/role_chat_screen.dart';
-import 'package:pocket_gpt/screen/setting_screen.dart';
+import 'package:pocket_gpt/screen/home_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -18,11 +17,14 @@ class _MainScreenState extends State<MainScreen> {
     const ChatListScreen(),
     const RoleChatScreen(),
     const Text('Scrap'),
-    const SettingScreen()
+    const Text('Scrap'),
   ];
 
   @override
   Widget build(BuildContext context) {
+    // 테마
+    ThemeData theme = Theme.of(context);
+
     return Scaffold(
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -33,37 +35,37 @@ class _MainScreenState extends State<MainScreen> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.grey,
+        backgroundColor: theme.primaryColor,
+        selectedItemColor: theme.colorScheme.secondary,
+        unselectedItemColor: theme.tabBarTheme.unselectedLabelColor,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(
               CupertinoIcons.chat_bubble,
               size: 28,
             ),
-            label: 'Chats',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               CupertinoIcons.tray_full,
               size: 28,
             ),
-            label: 'Dicover',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              CupertinoIcons.archivebox,
+              CupertinoIcons.viewfinder,
               size: 28,
             ),
-            label: 'Scrap',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              CupertinoIcons.settings,
+              CupertinoIcons.profile_circled,
               size: 28,
             ),
-            label: 'Settings',
+            label: '',
           ),
         ],
       ),
